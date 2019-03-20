@@ -32,7 +32,7 @@ function Cachios(axiosInstance, nodeCacheConf) {
 }
 
 Cachios.prototype.getCacheKey = function (config) {
-  return hash(this.getCacheIdentifier(config));
+  return hash(this.getCacheIdentifier(config), { ignoreUnknown: true });
 };
 
 Cachios.prototype.getCachedValue = function (cacheKey) {
