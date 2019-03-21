@@ -32,7 +32,23 @@ function Cachios(axiosInstance, nodeCacheConf) {
 }
 
 Cachios.prototype.getCacheKey = function (config) {
-  return hash(this.getCacheIdentifier(config), { ignoreUnknown: true });
+  const configClone = JSON.parse(JSON.stringify(config))
+  // If request is file upload use a random key instead
+  if( configClone.data instanceof FormData ) {
+    var res = Array.from(configClone.data.entries(), ([key, prop]) => (
+        {[key]: {
+          "ContentLength":
+          typeof prop === "string"
+          ? prop.length
+          : prop.size
+        }
+      }))
+
+    // Basically the length of the file, but close enought to a unique key?
+    configClone.data = JSON.stringify(res)
+  }
+
+  return hash(this.getCacheIdentifier(configClone));
 };
 
 Cachios.prototype.getCachedValue = function (cacheKey) {
