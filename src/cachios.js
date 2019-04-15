@@ -32,10 +32,11 @@ function Cachios(axiosInstance, nodeCacheConf) {
 }
 
 Cachios.prototype.getCacheKey = function (config) {
-  const configClone = JSON.parse(JSON.stringify(config))
+  let configClone = JSON.parse(JSON.stringify(config))
+
   // If request is file upload use a random key instead
-  if( configClone.data instanceof FormData ) {
-    var res = Array.from(configClone.data.entries(), ([key, prop]) => (
+  if( config.data instanceof FormData ) {
+    var res = Array.from(config.data.entries(), ([key, prop]) => (
         {[key]: {
           "ContentLength":
           typeof prop === "string"
