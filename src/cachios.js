@@ -52,14 +52,14 @@ Cachios.prototype.getCacheKey = function (config) {
     }
 
 
-    var res = Array.from(config.data.entries(), ([key, prop]) => (
-        {[key]: {
+    var res = Array.from(config.data.entries(), function([key, prop]) {
+        [key]: {
           "ContentLength":
           typeof prop === "string"
           ? prop.length
           : prop.size
         }
-      }))
+      })
 
     // Basically the length of the file, but close enought to a unique key?
     configClone.data = JSON.stringify(res)
