@@ -31,12 +31,12 @@ function Cachios(axiosInstance, nodeCacheConf) {
   this.getResponseCopy = defaultResponseCopier;
 }
 
-Cachios.prototype.getCacheKey = function (config) {
-  let configClone = JSON.parse(JSON.stringify(config))
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return right[Symbol.hasInstance](left); } else { return left instanceof right; } }
 
-  // If request is file upload use a random key instead
-  if( config.data instanceof FormData ) {
-    
+Cachios.prototype.getCacheKey = function (config) {
+  var configClone = JSON.parse(JSON.stringify(config)); // If request is file upload use a random key instead
+
+  if (_instanceof(config.data, FormData)) {
     // Object.entries() polyfill
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries#Polyfill
     if (!Object.entries) {
@@ -51,18 +51,17 @@ Cachios.prototype.getCacheKey = function (config) {
       };
     }
 
+    var res = Array.from(config.data.entries(), function (_ref) {
+      var _ref2;
 
-    var res = Array.from(config.data.entries(), function([key, prop]) {
-        [key]: {
-          "ContentLength":
-          typeof prop === "string"
-          ? prop.length
-          : prop.size
-        }
-      })
+      var key = _ref[0],
+          prop = _ref[1];
+      return _ref2 = {}, _ref2[key] = {
+        "ContentLength": typeof prop === "string" ? prop.length : prop.size
+      }, _ref2;
+    }); // Basically the length of the file, but close enought to a unique key?
 
-    // Basically the length of the file, but close enought to a unique key?
-    configClone.data = JSON.stringify(res)
+    configClone.data = JSON.stringify(res);
   }
 
   return hash(this.getCacheIdentifier(configClone));
